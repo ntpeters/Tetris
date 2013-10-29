@@ -1,5 +1,5 @@
 #pragma once
-#include "BaseState.h"
+#include "states/BaseState.h"
 #include <string>
 #include <stack>
 #include <allegro5/allegro.h>

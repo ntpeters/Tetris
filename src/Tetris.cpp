@@ -1,6 +1,6 @@
 #include "Tetris.h"
-#include "MenuState.h"
-#include "simplog.h"
+#include "states/MenuState.h"
+#include "util/simplog.h"
 #include <stdio.h>
 #include <string>
 #include <allegro5/allegro.h>
@@ -15,7 +15,7 @@ Tetris::Tetris() {
     targetFPS       = 60.0;
     screenWidth     = 640;
     screenHeight    = 480;
-    fontName        = "minecraftia.ttf";
+    fontName        = "res/fnt/minecraftia.ttf";
     showFPS         = true;
 
     writeLog( LOG_VERBOSE, "Target FPS: %.2f", targetFPS );
@@ -84,6 +84,7 @@ Tetris::Tetris() {
     font18 = al_load_font( fontName, 18, 0 );
     if( !font18 ) {
         writeLog( LOG_FATAL, "Failed to load font '%s' at size %d!", fontName, 18 );
+        throw -1;
     } else {
         writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 18 );
     }
@@ -92,6 +93,7 @@ Tetris::Tetris() {
     font12 = al_load_font( fontName, 12, 0 );
     if( !font12 ) {
         writeLog( LOG_FATAL, "Failed to load font '%s' at size %d!", fontName, 12 );
+        throw -1;
     } else {
         writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 12 );
     }
@@ -100,6 +102,7 @@ Tetris::Tetris() {
     timer = al_create_timer( 1.0 / targetFPS );
     if( !timer ) {
         writeLog( LOG_FATAL, "Failed to create timer with resolution of %.2f seconds!", 1.0 / targetFPS );
+        throw -1;
     } else {
         writeLog( LOG_VERBOSE, "Timer created with resolution of %.2f seconds", 1.0 / targetFPS );
     }

@@ -2,7 +2,7 @@
 #include <string>
 #include <allegro5/allegro_native_dialog.h>
 #include "Tetris.h"
-#include "simplog.h"
+#include "util/simplog.h"
 
 const char* version = "Development Build";
 

@@ -1,5 +1,5 @@
 #include "BaseState.h"
-#include "simplog.h"
+#include "../util/simplog.h"
 #include <iostream>
 
 BaseState::BaseState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_queueIn ) {

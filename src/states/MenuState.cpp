@@ -1,6 +1,6 @@
 #include "MenuState.h"
 #include "BaseState.h"
-#include "simplog.h"
+#include "../util/simplog.h"
 #include <stdio.h>
 #include <allegro5/allegro.h>
 
