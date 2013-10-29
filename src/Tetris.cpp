@@ -25,13 +25,13 @@ Tetris::Tetris() {
     writeLog( LOG_VERBOSE, "Display FPS set to '%s'", showFPS ? "true" : "false" );
 
     // Begin initializing Allegro objects
-	display        = NULL;
-	event_queue    = NULL;
+    display        = NULL;
+    event_queue    = NULL;
     font18         = NULL;
     timer          = NULL;
 
     // Initialize Allegro
- 	if( !al_init() ) {
+    if( !al_init() ) {
         writeLog( LOG_FATAL, "Failed to initialize Allegro!" );
         throw -1;
     } else {
@@ -51,21 +51,21 @@ Tetris::Tetris() {
     if( !al_install_keyboard() ) {
         writeLog( LOG_FATAL, "Failed to initialize the keyboard!" );
         throw -1;
-	} else {
+    } else {
         writeLog( LOG_DEBUG, "Keyboard initialized successfully" );
-	}
+    }
 
     // Create the event queue
-	event_queue = al_create_event_queue();
-	if( !event_queue ) {
+    event_queue = al_create_event_queue();
+    if( !event_queue ) {
         writeLog( LOG_FATAL, "Failed to create event queue!" );
         throw -1;
-	} else {
+    } else {
         writeLog( LOG_DEBUG, "Event Queue created susscessfully" );
-	}
+    }
 
     // Register the display with the event queue
-	al_register_event_source( event_queue, al_get_display_event_source( display ) );
+    al_register_event_source( event_queue, al_get_display_event_source( display ) );
     writeLog( LOG_VERBOSE, "Display event registered" );
 
     // Register the keyboard with the event queue
@@ -122,7 +122,7 @@ Tetris::Tetris() {
     Free all Allegro objects
 */
 Tetris::~Tetris() {
-	al_destroy_display( display );
+    al_destroy_display( display );
     writeLog( LOG_VERBOSE, "Display destroyed" );
 
     al_destroy_event_queue( event_queue );
