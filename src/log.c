@@ -178,11 +178,17 @@ void setSilentMode( bool silent ) {
     a new empty logfile.
 */
 void flushLog() {
-    // Remove the old log file
-    int err = remove( logFile );
-    if( err ) {
-        perror( "ERROR: Unable to flush logfile!" );
-        exit( -1 );
+    // Check if file exists
+    if( !access( logFile, F_OK ) ) {
+        // Remove the old log file
+        int err = remove( logFile );
+        if( err ) {
+            perror( "ERROR: Unable to flush logfile!" );
+            exit( -1 );
+        }
+    } else {
+        printf( "%s\tERROR : Logfile '%s' does not exist. It will be created now.\n", getDateString(), logFile );
+        fflush(stdout);
     }
 
     // Create new empty log file

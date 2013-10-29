@@ -12,7 +12,12 @@
 *.la
 *.a
 
+# Ignore the bin directory
 bin/*
 
+# Ignore vim undo and swap files
 *.un~
 *.swp
+
+# Ignore log files
+*.log
