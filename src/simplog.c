@@ -1,13 +1,16 @@
 /*
      A very basic logger for output of messages at various logging levels
-     with date/time stamp to standard out and a defined log file.
+     with date/time stamp to standard out/err and a defined log file.
 
      Author: Nate Peterson
      Created: June 2013
      Last Updated: Oct 2013
 */
 
-#include "log.h"
+// Used for printing from within the logger. Prints if debug level is LOG_DEBUG or higher
+#define LOG_LOGGER 4
+
+#include "simplog.h"
 #include <stdio.h>
 #include <time.h>
 #include <stdarg.h>
@@ -19,12 +22,15 @@
 #include <stdbool.h>
 
 // Logger settings constants
-static int          dbgLevel    = LOG_VERBOSE;
-static const char*  logFile     = "default.log";
-static bool         silentMode  = false;
+static int          dbgLevel    = LOG_DEBUG;        // Default Logging level
+static const char*  logFile     = "default.log";    // Default log file name
+static bool         silentMode  = false;            // Default silent mode setting
+
+// Private function prototypes
+static char* getDateString();
 
 /*
-    Writes output to defined logfile and standard out with
+    Writes output to defined logfile and standard out/err with
     date/time stamp and associated log level.
     
     Can take formatted string like printf, with a variable sized list of
@@ -36,16 +42,16 @@ static bool         silentMode  = false;
 
     Logging Levels:
     -2 : Fatal          - A fatal error has occured: program will exit immediately
-    -1 : Error          - An error has occured: program will typically not exit
+    -1 : Error          - An error has occured: program may not exit
     0  : Info           - Nessessary information regarding program operation
     1  : Warnings       - Any circumstance that may not affect normal operation
     2  : Debug          - Standard debug messages
     3  : Debug-Verbose  - All debug messages
 
     Input:
-    int loglvl - The desired output logging level.  See above table for levels.
-    char* str  - The message to be output. This is a format string.
-    ...        - Variable length list of arguments to be used with the format string.
+    int loglvl      - The desired output logging level.  See above table for levels.
+    const char* str - The message to be output. This is a format string.
+    ...             - Variable length list of arguments to be used with the format string (optional).
 */
 void writeLog( int loglvl, const char* str, ... ) {
     // Open the log file
@@ -63,9 +69,10 @@ void writeLog( int loglvl, const char* str, ... ) {
     int msgSize = strlen( str ) + strlen ( date ) + strlen( strerror( errno ) ) + 10;  // 10 char buffer to prevent overflow
     char* msg = (char*)malloc( msgSize + max_va_list_size );
 
+    // Prepare message based on logging level and debug level
     if( loglvl < LOG_INFO ){
         if( loglvl == LOG_FATAL ) {
-               sprintf( msg, "%s\tFATAL : ", date );   // -2: Fatal
+            sprintf( msg, "%s\tFATAL : ", date );   // -2: Fatal
         } else if( loglvl == LOG_ERROR ) {
             sprintf( msg, "%s\tERROR : ", date );      // -1: Error
         }
@@ -84,6 +91,7 @@ void writeLog( int loglvl, const char* str, ... ) {
             write( STDERR_FILENO, msg, strlen( msg ) );
         }
     } else {
+        // Used to check if a valid combination of log level and debug level exists
         bool valid = true;
 
         if( loglvl == LOG_INFO ) {
@@ -94,6 +102,8 @@ void writeLog( int loglvl, const char* str, ... ) {
             sprintf( msg, "%s\tDEBUG : ", date );      // 2: Debug
         } else if( loglvl == LOG_VERBOSE && dbgLevel >= LOG_VERBOSE ) {
             sprintf( msg, "%s\tDEBUG : ", date );      // 3: Verbose
+        } else if( loglvl == LOG_LOGGER && dbgLevel >= LOG_DEBUG ) {
+            sprintf( msg, "%s\tLOG   : ", date );
         } else {
             // Don't print anything
             valid = false;
@@ -133,19 +143,20 @@ void writeLog( int loglvl, const char* str, ... ) {
     Input:
     int level - desired debug level
 */
-void setDebugLevel( int level ) {
+void setLogDebugLevel( int level ) {
     if( level >= LOG_INFO && level <= LOG_VERBOSE ) {
          dbgLevel = level;
+         writeLog( LOG_LOGGER, "Debug level set to %d", level );
     } else {
         char* error = (char*)malloc(500);
-        sprintf( &error[ strlen( error ) ], "Invalid debug level of '%d'. Setting to default value of '%d'\n", level, dbgLevel );
+        sprintf( &error[ strlen( error ) ], "Invalid debug level of '%d'. Setting to default value of '%d'\n", level, LOG_INFO );
         sprintf( &error[ strlen( error ) ], "\t\t\t\tValid Debug Levels:\n");
         sprintf( &error[ strlen( error ) ], "\t\t\t\t0  : Info\n" );
         sprintf( &error[ strlen( error ) ], "\t\t\t\t1  : Warnings\n" );
         sprintf( &error[ strlen( error ) ], "\t\t\t\t2  : Debug\n" );
         sprintf( &error[ strlen( error ) ], "\t\t\t\t3  : Debug-Verbose" );
 
-        writeLog( LOG_ERROR, error );
+        writeLog( LOG_LOGGER, error );
         free( error );
     }
 }
@@ -154,10 +165,11 @@ void setDebugLevel( int level ) {
     Sets the filename for log output.
 
     Input:
-    char* file - desired log output file
+    const char* file - desired log output file
 */
 void setLogFile( const char* file ) {
     logFile = file;
+    writeLog( LOG_LOGGER, "Log file set to '%s'", logFile );
 }
 
 /*
@@ -166,11 +178,11 @@ void setLogFile( const char* file ) {
     Log output will continue normally.
 
     Input:
-    int silent - Desired state of silent mode: 0 = Disabled, 1 = Enabled (default)
+    bool silent - Desired state of silent mode: false = Disabled (default), true = Enabled
 */
-void setSilentMode( bool silent ) {
+void setLogSilentMode( bool silent ) {
+    writeLog( LOG_LOGGER, "Silent mode %s", silent ? "enabled" : "disabled" );
     silentMode = silent;
-    writeLog( LOG_DEBUG, "Silent mode enabled" );
 }
 
 /*
@@ -187,24 +199,35 @@ void flushLog() {
             exit( -1 );
         }
     } else {
-        printf( "%s\tERROR : Logfile '%s' does not exist. It will be created now.\n", getDateString(), logFile );
-        fflush(stdout);
+        // Print error message if silent mode is not enabled
+        if( !silentMode ) {
+            printf( "%s\tLOG   : Logfile '%s' does not exist. It will be created now.\n", getDateString(), logFile );
+            fflush(stdout); 
+        }
     }
 
     // Create new empty log file
     int log = open( logFile, O_CREAT | O_RDWR, 0664 );
     close( log );
+
+    writeLog( LOG_LOGGER, "Log file '%s' cleared", logFile );
 }
 
 /*
     Gets the current date/time and returns it as a string of the form:
     [yyyy-mm-dd hh:mm:ss]
+
+    Returned char pointer must be freed.
 */
 static char* getDateString() {
-    time_t t = time ( NULL );
+    // Initialize and get current time
+    time_t t = time( NULL );
     struct tm *timeinfo = localtime( &t );
+
+    // Allocate space for date string
     char* date = (char*)malloc( 100 );
 
+    // Get each component of time struct that we care about
     int year    = timeinfo->tm_year + 1900;
     int month   = timeinfo->tm_mon + 1;
     int day     = timeinfo->tm_mday;
@@ -242,6 +265,4 @@ static char* getDateString() {
     }
 
     return date;
-
-    // TODO: Simplify
 }

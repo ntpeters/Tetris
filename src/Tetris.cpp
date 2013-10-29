@@ -1,5 +1,6 @@
 #include "Tetris.h"
-#include "log.h"
+#include "MenuState.h"
+#include "simplog.h"
 #include <stdio.h>
 #include <string>
 #include <allegro5/allegro.h>
@@ -10,33 +11,24 @@
     Initialize game and all Allegro objects
 */
 Tetris::Tetris() {
-    // Set logfile name
-    setLogFile( "tetris.log" );
-
-    // Flush the logfile (comment out to maintain a running log)
-    flushLog();
-
-    // Set the level of logger output
-    setDebugLevel( LOG_DEBUG );
-
     // Initialize settings variables
-    FPS             = 60.0;
+    targetFPS       = 60.0;
     screenWidth     = 640;
     screenHeight    = 480;
     fontName        = "minecraftia.ttf";
     showFPS         = true;
 
-    writeLog( LOG_VERBOSE, "Target FPS: %.2f", FPS );
+    writeLog( LOG_VERBOSE, "Target FPS: %.2f", targetFPS );
     writeLog( LOG_VERBOSE, "Screen Width: %d", screenWidth );
     writeLog( LOG_VERBOSE, "Screen Height: %d", screenHeight );
     writeLog( LOG_VERBOSE, "Font Name: %s", fontName );
     writeLog( LOG_VERBOSE, "Display FPS set to '%s'", showFPS ? "true" : "false" );
 
     // Begin initializing Allegro objects
-	display = NULL;
-	event_queue = NULL;
-    font18 = NULL;
-    timer = NULL;
+	display        = NULL;
+	event_queue    = NULL;
+    font18         = NULL;
+    timer          = NULL;
 
     // Initialize Allegro
  	if( !al_init() ) {
@@ -90,15 +82,27 @@ Tetris::Tetris() {
 
     // Load a size 18 font
     font18 = al_load_font( fontName, 18, 0 );
-    writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 18 );
+    if( !font18 ) {
+        writeLog( LOG_FATAL, "Failed to load font '%s' at size %d!", fontName, 18 );
+    } else {
+        writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 18 );
+    }
 
     // Load a size 12 font
     font12 = al_load_font( fontName, 12, 0 );
-    writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 12 );
+    if( !font12 ) {
+        writeLog( LOG_FATAL, "Failed to load font '%s' at size %d!", fontName, 12 );
+    } else {
+        writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 12 );
+    }
 
     // Create a timer to cap the game FPS
-    timer = al_create_timer( 1.0 / FPS );
-    writeLog( LOG_VERBOSE, "Timer created" );
+    timer = al_create_timer( 1.0 / targetFPS );
+    if( !timer ) {
+        writeLog( LOG_FATAL, "Failed to create timer with resolution of %.2f seconds!", 1.0 / targetFPS );
+    } else {
+        writeLog( LOG_VERBOSE, "Timer created with resolution of %.2f seconds", 1.0 / targetFPS );
+    }
 
     // Register the timer with the event queue
     al_register_event_source( event_queue, al_get_timer_event_source( timer ) );
@@ -106,14 +110,15 @@ Tetris::Tetris() {
 
     // Clear the screen to black
     al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
+
+    // Push menu state onto the stack
+    states.push( new MenuState( display, event_queue ) );
 }
 
 /*
-    Destroy all Allegro objects
+    Free all Allegro objects
 */
 Tetris::~Tetris() {
-    // Free all Allegro objects
-
 	al_destroy_display( display );
     writeLog( LOG_VERBOSE, "Display destroyed" );
 
@@ -142,41 +147,63 @@ void Tetris::play() {
     // Run loop variables
     bool done = false;
     bool redraw = true;
-    double old_time = al_get_time();
-    double cur_fps = 0.0;
+    double lastTime = al_get_time();
+    double currentFPS = 0.0;
     int frames_done = 1;
-    ALLEGRO_EVENT ev;
+    ALLEGRO_EVENT event;
 
     // Run loop
     while( !done ) {
         // Wait for an event to occur
-        al_wait_for_event( event_queue, &ev );
+        al_wait_for_event( event_queue, &event );
 
-        // Redraw everytime the timer event is triggered
-        if( ev.type == ALLEGRO_EVENT_TIMER ) {
+        // Redraw only when the timer event is triggered to cap FPS
+        if( event.type == ALLEGRO_EVENT_TIMER ) {
             redraw = true;
         }
 
+        // Get current time
+        double currentTime = al_get_time();
+
+        // Calculate delta time
+        double delta = currentTime - lastTime;
+
         // Calculate current FPS
-        double cur_time = al_get_time();
-        if( cur_time - old_time >= 1.0 ) {
-            cur_fps = frames_done / ( cur_time - old_time );
+        if( delta >= 1.0 ) {
+            currentFPS = frames_done / delta;
     
             frames_done = 0;
-            old_time = cur_time;
+            lastTime = currentTime;
         }        
 
+        // Redraw if the timer was triggered, and the event queue is empty
         if( redraw && al_is_event_queue_empty( event_queue ) ) {
             redraw = false;
 
             // Print the FPS in the upper left corner
             if( showFPS ) {
-                al_draw_textf( font12, al_map_rgb( 255, 255, 255 ), 0, 0, ALLEGRO_ALIGN_LEFT, "FPS: %.2f", cur_fps );
+                al_draw_textf( font12, al_map_rgb( 255, 255, 255 ), 0, 0, ALLEGRO_ALIGN_LEFT, "FPS: %.2f", currentFPS );
+            }
+
+            // Update and render the current state
+            bool updateOkay = states.top()->update( delta );
+            bool renderOkay = states.top()->render();
+
+            // Check if update and render completed okay for the current state
+            if( !updateOkay || !renderOkay ) {
+                // Delete the current state and pop if off the stack
+                delete states.top();
+                states.pop();
+
+                // If there are no states left, end the run loop
+                if( states.empty() ) {
+                    done = true;
+                }
             }
 
             // Flip the display and clear screen to black
             al_flip_display();
-            al_clear_to_color( al_map_rgb( 0, 0, 0) );
+            al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
         }
 
         // Increment the current frames total
