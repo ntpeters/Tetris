@@ -22,5 +22,5 @@ private:
     int screenHeight;
     const char* fontName;
     bool showFPS;
-    std::stack<BaseState*> states;
+    std::stack<BaseState*>* states;
 };

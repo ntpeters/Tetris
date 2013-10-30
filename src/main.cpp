@@ -45,6 +45,9 @@ int main( int argc, char **argv ) {
 }
 
 void initLogger() {
+    // Suppresses log output to stdout when true
+    setLogSilentMode( silent );
+    
     // Set logfile name
     setLogFile( logFile );
 
@@ -55,7 +58,4 @@ void initLogger() {
 
     // Set the level of logger output
     setLogDebugLevel( logLevel );
-
-    // Suppresses log output to stdout when true
-    setLogSilentMode( silent );
 }

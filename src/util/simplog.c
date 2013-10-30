@@ -24,7 +24,7 @@
 // Logger settings constants
 static int          dbgLevel    = LOG_DEBUG;        // Default Logging level
 static const char*  logFile     = "default.log";    // Default log file name
-static bool         silentMode  = false;            // Default silent mode setting
+static bool         silentMode  = true;             // Default silent mode setting
 
 // Private function prototypes
 static char* getDateString();
@@ -181,8 +181,8 @@ void setLogFile( const char* file ) {
     bool silent - Desired state of silent mode: false = Disabled (default), true = Enabled
 */
 void setLogSilentMode( bool silent ) {
-    writeLog( LOG_LOGGER, "Silent mode %s", silent ? "enabled" : "disabled" );
     silentMode = silent;
+    writeLog( LOG_LOGGER, "Silent mode %s", silent ? "enabled" : "disabled" );
 }
 
 /*

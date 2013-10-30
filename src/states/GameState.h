@@ -4,8 +4,11 @@
 
 class GameState : public BaseState {
 public:
-    GameState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_queueIn );
+    GameState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_queueIn, std::stack<BaseState*>* statesIn );
     ~GameState();
     bool update( double delta );
     bool render();
+
+private:
+    double totalTime;
 };

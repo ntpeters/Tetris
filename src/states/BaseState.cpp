@@ -2,9 +2,10 @@
 #include "../util/simplog.h"
 #include <iostream>
 
-BaseState::BaseState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_queueIn ) {
+BaseState::BaseState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_queueIn, std::stack<BaseState*>* statesIn ) {
     display     = displayIn;
     event_queue = event_queueIn;
+    states      = statesIn;
 
     writeLog( LOG_VERBOSE, "New state created (base state constructor)" );
 }

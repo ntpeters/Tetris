@@ -115,7 +115,8 @@ Tetris::Tetris() {
     al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
 
     // Push menu state onto the stack
-    states.push( new MenuState( display, event_queue ) );
+    states = new std::stack<BaseState*>();
+    states->push( new MenuState( display, event_queue, states ) );
 }
 
 /*
@@ -163,6 +164,8 @@ void Tetris::play() {
         // Redraw only when the timer event is triggered to cap FPS
         if( event.type == ALLEGRO_EVENT_TIMER ) {
             redraw = true;
+        } else if( event.type == ALLEGRO_EVENT_DISPLAY_CLOSE ) {
+            done = true;
         }
 
         // Get current time
@@ -183,30 +186,29 @@ void Tetris::play() {
         if( redraw && al_is_event_queue_empty( event_queue ) ) {
             redraw = false;
 
+            // Update and render the current state
+            bool updateOkay = states->top()->update( delta );
+            bool renderOkay = states->top()->render();
+
+            // Check if update and render completed okay for the current state
+            if( !updateOkay || !renderOkay ) {
+                // Delete the current state and pop if off the stack
+                delete states->top();
+                states->pop();
+
+                // If there are no states left, end the run loop
+                if( states->empty() ) {
+                    done = true;
+                }
+            }
+
             // Print the FPS in the upper left corner
             if( showFPS ) {
                 al_draw_textf( font12, al_map_rgb( 255, 255, 255 ), 0, 0, ALLEGRO_ALIGN_LEFT, "FPS: %.2f", currentFPS );
             }
 
-            // Update and render the current state
-            bool updateOkay = states.top()->update( delta );
-            bool renderOkay = states.top()->render();
-
-            // Check if update and render completed okay for the current state
-            if( !updateOkay || !renderOkay ) {
-                // Delete the current state and pop if off the stack
-                delete states.top();
-                states.pop();
-
-                // If there are no states left, end the run loop
-                if( states.empty() ) {
-                    done = true;
-                }
-            }
-
-            // Flip the display and clear screen to black
+            // Flip the display
             al_flip_display();
-            al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
         }
 
         // Increment the current frames total
