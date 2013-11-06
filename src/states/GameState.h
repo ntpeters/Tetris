@@ -9,6 +9,9 @@ public:
     bool update( double delta );
     bool render();
 
+    ALLEGRO_BITMAP* pic;
+    ALLEGRO_FONT* font18;
+
 private:
     double totalTime;
 };

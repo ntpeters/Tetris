@@ -82,7 +82,9 @@ void writeLog( int loglvl, const char* str, ... ) {
 
         // If errno is anything other than "Success", write it to the log.
         if( errno ) {
-            sprintf( msg + strlen( msg) + strlen( strerror( errno ) ), "%s\n", strerror( errno ) );
+            // Used to ensure errno output is aligned correctly
+            const char* dateLengthSpacing = "                     ";
+            sprintf( msg + strlen( msg), "%s\terrno : %s\n", dateLengthSpacing, strerror( errno ) );
         }
         // Write message to log
         write( log, msg, strlen( msg ) );

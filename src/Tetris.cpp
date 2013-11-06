@@ -6,6 +6,8 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
 
 /*
     Initialize game and all Allegro objects
@@ -13,8 +15,8 @@
 Tetris::Tetris() {
     // Initialize settings variables
     targetFPS       = 60.0;
-    screenWidth     = 640;
-    screenHeight    = 480;
+    screenWidth     = 800;
+    screenHeight    = 600;
     fontName        = "res/fnt/minecraftia.ttf";
     showFPS         = true;
 
@@ -55,6 +57,14 @@ Tetris::Tetris() {
         writeLog( LOG_DEBUG, "Keyboard initialized successfully" );
     }
 
+    // Initialize the mouse
+    if( !al_install_mouse() ) {
+        writeLog( LOG_FATAL, "Failed to initialize the mouse!" );
+        throw -1;
+    } else {
+        writeLog( LOG_DEBUG, "Mouse initialized successfully" );
+    }
+
     // Create the event queue
     event_queue = al_create_event_queue();
     if( !event_queue ) {
@@ -72,13 +82,36 @@ Tetris::Tetris() {
     al_register_event_source( event_queue, al_get_keyboard_event_source() );
     writeLog( LOG_VERBOSE, "Keyboard event registered" );
 
+    // Register the mouse with the event queue
+    writeLog( LOG_VERBOSE, "Mouse event registered" );
+
+    // Initialize Allegro's image addon for handling images
+    if( !al_init_image_addon() ) {
+        writeLog( LOG_FATAL, "Failed to initialize image addon!" );
+        throw -1;
+    } else {
+        writeLog( LOG_VERBOSE, "Image addon initialized" );
+    }
+
+    // Initialize Allegro's primitives addon for handling images
+    if( !al_init_primitives_addon() ) {
+        writeLog( LOG_FATAL, "Failed to initialize primitives addon!" );
+        throw -1;
+    } else {
+        writeLog( LOG_VERBOSE, "Primitives addon initialized" );
+    }
+
     // Initialize Allegro's font addon for handling fonts
     al_init_font_addon();
     writeLog( LOG_VERBOSE, "Font addon initialized" );
 
     // Initialize Allegro's TTF addon for handling TTF fonts
-    al_init_ttf_addon();
-    writeLog( LOG_VERBOSE, "TTF addon initialized" );
+    if( !al_init_ttf_addon() ) {
+        writeLog( LOG_FATAL, "Failed to initialize TTF addon!" );
+        throw -1;
+    } else {
+        writeLog( LOG_VERBOSE, "TTF addon initialized" );
+    }
 
     // Load a size 18 font
     font18 = al_load_font( fontName, 18, 0 );
@@ -180,7 +213,7 @@ void Tetris::play() {
     
             frames_done = 0;
             lastTime = currentTime;
-        }        
+        }
 
         // Redraw if the timer was triggered, and the event queue is empty
         if( redraw && al_is_event_queue_empty( event_queue ) ) {

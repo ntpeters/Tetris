@@ -1,7 +1,7 @@
 #include "MenuState.h"
 
 MenuState::MenuState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_queueIn, std::stack<BaseState*>* statesIn ) : BaseState( displayIn, event_queueIn, statesIn ) {
-    char* fontName        = "res/fnt/minecraftia.ttf";
+    const char* fontName        = "res/fnt/minecraftia.ttf";
 
     // Load a size 18 font
     font18 = al_load_font( fontName, 18, 0 );
@@ -38,10 +38,10 @@ bool MenuState::update( double delta ) {
 bool MenuState::render() { 
  
     // Clear screen to purple
-    al_clear_to_color(al_map_rgb(50,10,70));
+    al_clear_to_color( al_map_rgb( 50, 10, 70) );
 
     // Draw menu text
-    al_draw_text(font18, al_map_rgb(255,255,255), 640/2, (480/4),ALLEGRO_ALIGN_CENTRE, "This is the menu!");
+    al_draw_text( font18, al_map_rgb( 255, 255, 255 ), 800/2, (600/4),ALLEGRO_ALIGN_CENTRE, "This is the menu!");
 
     return true;
 }
