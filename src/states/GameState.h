@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseState.h"
+#include "../blocks/Tetromino.h"
 #include <allegro5/allegro.h>
 
 class GameState : public BaseState {
@@ -9,9 +10,7 @@ public:
     bool update( double delta );
     bool render();
 
-    ALLEGRO_BITMAP* pic;
-    ALLEGRO_FONT* font18;
-
 private:
     double totalTime;
+    Tetromino* piece;
 };

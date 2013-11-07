@@ -6,8 +6,11 @@ class Block {
 public:
 	Block();
 	~Block();
+	ALLEGRO_BITMAP* getBlock();
+	bool doesExist();
+	void toggleExists();
+
+private:
 	ALLEGRO_BITMAP* block;
-
-protected:
-
+	bool exists;
 };

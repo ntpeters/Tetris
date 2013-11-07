@@ -1,21 +1,26 @@
 #pragma once
 #include "Block.h"
+#include "Tetromino_Type.h"
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 
 class Tetromino {
 public:
-	Tetromino();
+	Tetromino( Tetromino_Type type );
 	~Tetromino();
-	virtual void rotateLeft() = 0;
-	virtual void rotateRight() = 0;
-	void moveLeft();
-	void moveRight();
+	void rotateLeft();
+	void rotateRight();
+	void moveLeft( double delta );
+	void moveRight( double delta );
 	void moveDown( double delta );
-	virtual void draw() = 0;
+	void update( double delta );
+	void draw();
 
 protected:
-	Block* block;
+	void init_block_array();
+	Block** blocks;
+	int array_size;
+	ALLEGRO_COLOR block_color;
 	float x;
 	float y;
 };
