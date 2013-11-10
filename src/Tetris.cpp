@@ -28,7 +28,8 @@ Tetris::Tetris() {
 
     // Begin initializing Allegro objects
     display        = NULL;
-    event_queue    = NULL;
+    main_queue     = NULL;
+    input_queue    = NULL;
     font18         = NULL;
     timer          = NULL;
 
@@ -65,24 +66,34 @@ Tetris::Tetris() {
         writeLog( LOG_DEBUG, "Mouse initialized successfully" );
     }
 
-    // Create the event queue
-    event_queue = al_create_event_queue();
-    if( !event_queue ) {
-        writeLog( LOG_FATAL, "Failed to create event queue!" );
+    // Create the main event queue
+    main_queue = al_create_event_queue();
+    if( !main_queue ) {
+        writeLog( LOG_FATAL, "Failed to create main event queue!" );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Event Queue created susscessfully" );
+        writeLog( LOG_DEBUG, "Main event Queue created susscessfully" );
+    }
+
+    // Create the input event queue
+    input_queue = al_create_event_queue();
+    if( !input_queue ) {
+        writeLog( LOG_FATAL, "Failed to create input event queue!" );
+        throw -1;
+    } else {
+        writeLog( LOG_DEBUG, "Input event Queue created susscessfully" );
     }
 
     // Register the display with the event queue
-    al_register_event_source( event_queue, al_get_display_event_source( display ) );
+    al_register_event_source( main_queue, al_get_display_event_source( display ) );
     writeLog( LOG_VERBOSE, "Display event registered" );
 
     // Register the keyboard with the event queue
-    al_register_event_source( event_queue, al_get_keyboard_event_source() );
+    al_register_event_source( input_queue, al_get_keyboard_event_source() );
     writeLog( LOG_VERBOSE, "Keyboard event registered" );
 
     // Register the mouse with the event queue
+    al_register_event_source( input_queue, al_get_mouse_event_source() );
     writeLog( LOG_VERBOSE, "Mouse event registered" );
 
     // Initialize Allegro's image addon for handling images
@@ -141,7 +152,7 @@ Tetris::Tetris() {
     }
 
     // Register the timer with the event queue
-    al_register_event_source( event_queue, al_get_timer_event_source( timer ) );
+    al_register_event_source( main_queue, al_get_timer_event_source( timer ) );
     writeLog( LOG_VERBOSE, "Timer event registered" );
 
     // Clear the screen to black
@@ -149,7 +160,7 @@ Tetris::Tetris() {
 
     // Push menu state onto the stack
     states = new std::stack<BaseState*>();
-    states->push( new MenuState( display, event_queue, states ) );
+    states->push( new MenuState( display, input_queue, states ) );
 }
 
 /*
@@ -159,8 +170,11 @@ Tetris::~Tetris() {
     al_destroy_display( display );
     writeLog( LOG_VERBOSE, "Display destroyed" );
 
-    al_destroy_event_queue( event_queue );
-    writeLog( LOG_VERBOSE, "Event queue destroyed" );
+    al_destroy_event_queue( main_queue );
+    writeLog( LOG_VERBOSE, "Main event queue destroyed" );
+
+    al_destroy_event_queue( input_queue );
+    writeLog( LOG_VERBOSE, "Input event queue destroyed" );
 
     al_destroy_timer( timer );
     writeLog( LOG_VERBOSE, "Timer destroyed" );
@@ -192,7 +206,7 @@ void Tetris::play() {
     // Run loop
     while( !done ) {
         // Wait for an event to occur
-        al_wait_for_event( event_queue, &event );
+        al_wait_for_event( main_queue, &event );
 
         // Redraw only when the timer event is triggered to cap FPS
         if( event.type == ALLEGRO_EVENT_TIMER ) {
@@ -216,7 +230,7 @@ void Tetris::play() {
         }
 
         // Redraw if the timer was triggered, and the event queue is empty
-        if( redraw && al_is_event_queue_empty( event_queue ) ) {
+        if( redraw && al_is_event_queue_empty( main_queue ) ) {
             redraw = false;
 
             // Update and render the current state

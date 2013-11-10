@@ -45,11 +45,11 @@ int main( int argc, char **argv ) {
 }
 
 void initLogger() {
-    // Suppresses log output to stdout when true
-    setLogSilentMode( silent );
-    
     // Set logfile name
     setLogFile( logFile );
+    
+    // Suppresses log output to stdout when true
+    setLogSilentMode( silent );
 
     // Flush the logfile
     if( !keepLogs ) {

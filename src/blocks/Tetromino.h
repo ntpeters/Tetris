@@ -15,6 +15,13 @@ public:
 	void moveDown( double delta );
 	void update( double delta );
 	void draw();
+	int getX();
+	int getY();
+	void setX( int xIn );
+	void setY( int yIn );
+	Block** getBlocks();
+	int getArrayWidth();
+	int getArrayHeight();
 
 protected:
 	void init_block_array();

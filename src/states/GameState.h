@@ -11,6 +11,11 @@ public:
     bool render();
 
 private:
+    bool checkCollision( Tetromino* tet );
+    Tetromino* getRandomPiece();
     double totalTime;
-    Tetromino* piece;
+    Tetromino* currentPiece;
+    Tetromino* nextPiece;
+    int updateCounter;
+    Block grid[10][20];
 };

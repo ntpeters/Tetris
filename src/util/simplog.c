@@ -24,7 +24,7 @@
 // Logger settings constants
 static int          dbgLevel    = LOG_DEBUG;        // Default Logging level
 static const char*  logFile     = "default.log";    // Default log file name
-static bool         silentMode  = true;             // Default silent mode setting
+static bool         silentMode  = false;             // Default silent mode setting
 
 // Private function prototypes
 static char* getDateString();
@@ -74,7 +74,7 @@ void writeLog( int loglvl, const char* str, ... ) {
         if( loglvl == LOG_FATAL ) {
             sprintf( msg, "%s\tFATAL : ", date );   // -2: Fatal
         } else if( loglvl == LOG_ERROR ) {
-            sprintf( msg, "%s\tERROR : ", date );      // -1: Error
+            sprintf( msg, "%s\tERROR : ", date );   // -1: Error
         }
 
         vsprintf( msg + strlen( msg ), str, args );
@@ -96,6 +96,7 @@ void writeLog( int loglvl, const char* str, ... ) {
         // Used to check if a valid combination of log level and debug level exists
         bool valid = true;
 
+        // Check loglvl/dbgLevel and add appropriate name to message
         if( loglvl == LOG_INFO ) {
             sprintf( msg, "%s\tINFO  : ", date );      // 0: Info
         } else if( loglvl == LOG_WARN && dbgLevel >= LOG_WARN ) {
@@ -128,7 +129,10 @@ void writeLog( int loglvl, const char* str, ... ) {
     // free args list
     va_end( args );
 
+    // close file
     close( log );
+
+    // free other variables
     free( date );
     free( msg );
 }
@@ -146,6 +150,7 @@ void writeLog( int loglvl, const char* str, ... ) {
     int level - desired debug level
 */
 void setLogDebugLevel( int level ) {
+    // Check if the provided debug level is valid, else print error message
     if( level >= LOG_INFO && level <= LOG_VERBOSE ) {
          dbgLevel = level;
          writeLog( LOG_LOGGER, "Debug level set to %d", level );
@@ -189,7 +194,7 @@ void setLogSilentMode( bool silent ) {
 
 /*
     Flushes the contents of the logfile by deleting it and recreating
-    a new empty logfile.
+    a new empty logfile of the same name.
 */
 void flushLog() {
     // Check if file exists

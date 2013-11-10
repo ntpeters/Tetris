@@ -22,10 +22,15 @@ Block::~Block() {
 }
 
 ALLEGRO_BITMAP* Block::getBlock() {
-	if( block == nullptr ){
-		writeLog( LOG_VERBOSE, "block is null!" );
-	}
 	return block;
+}
+
+ALLEGRO_COLOR Block::getColor() {
+	return block_color;
+}
+
+void Block::setColor( ALLEGRO_COLOR colorIn ) {
+	block_color = colorIn;
 }
 
 bool Block::doesExist() {
