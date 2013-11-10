@@ -1,5 +1,5 @@
 #include "GameState.h"
-#include "../blocks/Tetromino_Type.h"
+#include "../entities/Tetromino_Type.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
@@ -7,10 +7,23 @@
 GameState::GameState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_queueIn, std::stack<BaseState*>* statesIn ) : BaseState( displayIn, event_queueIn, statesIn ) {
     totalTime = 0.0;
     updateCounter = 0;
-    currentPiece = this->getRandomPiece();
-    nextPiece = this->getRandomPiece();
+
+    const char* bmpFile = "res/img/block2.png";
+
+    blockImg = al_load_bitmap( bmpFile );
+    if( !blockImg ) {
+        writeLog( LOG_FATAL, "Failed to load bitmap!" );
+        throw -1;
+    } else {
+        writeLog( LOG_VERBOSE, "Bitmap loaded successfully" );
+    }
+
+    currentPiece = this->getRandomPiece( blockImg );
+    nextPiece = this->getRandomPiece( blockImg );
     nextPiece->setX( 580 );
     nextPiece->setY( 60 );
+
+    grid = new Grid( blockImg );
     writeLog( LOG_DEBUG, "New game state created" );
 }
 
@@ -19,6 +32,8 @@ GameState::~GameState() {
 }
 
 bool GameState::update( double delta ) {
+    //writeLog( LOG_VERBOSE, "update" );
+
     totalTime += delta;
     updateCounter++;
 
@@ -50,21 +65,21 @@ bool GameState::update( double delta ) {
         if( checkCollision( currentPiece ) ) {
            delete currentPiece;
            currentPiece = nextPiece;
-           nextPiece = this->getRandomPiece();
+           nextPiece = this->getRandomPiece( blockImg);
            nextPiece->setX( 580 );
            nextPiece->setY( 60 );
            currentPiece->setX( 280 );
            currentPiece->setY( -29 );
            // writeLog( LOG_VERBOSE, "deleted" );
         }
-        totalTime = 0;
+         totalTime = 0;
     }
 
     return true;
 }
 
 bool GameState::checkCollision( Tetromino* tet ) {
-    Block** check = tet->getBlocks();
+    std::vector<std::vector<Block>> check = tet->getBlocks();
     int x = tet->getX();
     int y = tet->getY();
     int xA = (tet->getX()-250)/30;
@@ -75,14 +90,14 @@ bool GameState::checkCollision( Tetromino* tet ) {
         for( int j = tet->getArrayHeight()-1; j >= 0; j-- ) {
             // writeLog( LOG_VERBOSE, "loop 2" );
             // writeLog( LOG_VERBOSE, "check[%d, %d] - grid[%d, %d]", i, j, xA+i, yA+j );
-            if( ( check[i][j].doesExist() &&  grid[xA+i][yA+1+j].doesExist() ) ){
+            if( ( check[i][j].doesExist() &&  grid->get( xA+i, yA+1+j )->doesExist() ) ){
                 // writeLog( LOG_VERBOSE, "if" );
                 for( int k = 0; k < tet->getArrayWidth(); k++ ) {
                     // writeLog( LOG_VERBOSE, "loop 3" );
                     for( int l = 0; l < tet->getArrayHeight(); l++ ) {
                         // writeLog( LOG_VERBOSE, "loop 4" );
                         if( check[l][k].doesExist() ) {
-                            grid[xA+l][yA+k] = check[l][k];
+                            grid->set( xA+l, yA+k, check[l][k] );
                         }
                     }
                 }
@@ -96,29 +111,30 @@ bool GameState::checkCollision( Tetromino* tet ) {
     return false;
 }
 
-Tetromino* GameState::getRandomPiece() {
+Tetromino* GameState::getRandomPiece( ALLEGRO_BITMAP* blockIn ) {
     srand( time( NULL ) );
     int rNum = rand() % 6;
 
     switch( rNum ) {
         case 0:
-            return new Tetromino( Tetromino_Type::I_BLOCK );
+            return new Tetromino( Tetromino_Type::I_BLOCK, blockIn );
         case 1:
-            return new Tetromino( Tetromino_Type::O_BLOCK );
+            return new Tetromino( Tetromino_Type::O_BLOCK, blockIn );
         case 2:
-            return new Tetromino( Tetromino_Type::L_BLOCK );
+            return new Tetromino( Tetromino_Type::L_BLOCK, blockIn );
         case 3:
-            return new Tetromino( Tetromino_Type::J_BLOCK );
+            return new Tetromino( Tetromino_Type::J_BLOCK, blockIn );
         case 4:
-            return new Tetromino( Tetromino_Type::T_BLOCK );
+            return new Tetromino( Tetromino_Type::T_BLOCK, blockIn );
         case 5:
-            return new Tetromino( Tetromino_Type::S_BLOCK );
+            return new Tetromino( Tetromino_Type::S_BLOCK, blockIn );
         case 6:
-            return new Tetromino( Tetromino_Type::Z_BLOCK );
+            return new Tetromino( Tetromino_Type::Z_BLOCK, blockIn );
     }
 }
 
 bool GameState::render() { 
+    //writeLog( LOG_VERBOSE, "render" );
 
     // Clear screen to black
     al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
@@ -136,23 +152,29 @@ bool GameState::render() {
         al_draw_line(250, i, 550, i, al_map_rgb( 255, 255, 255 ), 1);
     }
 
+    //writeLog( LOG_VERBOSE, "about to draw" );
     // Draw the grid
     for( int i = 0; i < 10; i++ ) {
         for( int j = 0; j < 20; j++ ) {
-            if( grid[i][j].doesExist() ) {
+            //writeLog( LOG_VERBOSE, "checking if exists" );
+            if( grid->get( i, j )->doesExist() ) {
                 if( j != 19 ) {
-                    al_draw_tinted_bitmap( grid[i][j].getBlock(), grid[i][j].getColor(), 250 + i * 30, 1 + j * 30, 0 );
-                    /*Block** check = currentPiece->getBlocks();
-                    int xA = (currentPiece->getX()-250)/30;
-                    int yA = currentPiece->getY()/30;
-                    if( check[l][k].doesExist() ) {
-                        grid[xA+l][yA+k] = check[l][k];
-                    }*/
+                    //writeLog( LOG_VERBOSE, "drawing main..." );
+                    al_draw_tinted_bitmap( grid->get( i, j )->getBlock(), grid->get( i, j)->getColor(), 250 + i * 30, 1 + j * 30, 0 );
+                    // std::vector<std::vector<Block>> check = currentPiece->getBlocks();
+                    // int xA = (currentPiece->getX()-250)/30;
+                    // int yA = currentPiece->getY()/30;
+                    // if( check[l][k]->doesExist() ) {
+                    //     grid->set( xA+l, yA+k, check[l][k] );
+                    // }
+                    //writeLog( LOG_VERBOSE, "drew it!" );
                 } else {
-                    al_draw_tinted_bitmap( grid[i][j].getBlock(), al_map_rgb(150,180,200), 250 + i * 30, 1 + j * 30, 0 );
+                    //writeLog( LOG_VERBOSE, "drawing other..." );
+                    al_draw_tinted_bitmap( grid->get( i, j )->getBlock(), al_map_rgb(150,180,200), 250 + i * 30, 1 + j * 30, 0 );
                 }
             } else if( j == 19 ) {
-                grid[i][j].toggleExists();
+                //writeLog( LOG_VERBOSE, "toggling" );
+                grid->get( i, j )->toggleExists();
             }
         }
     }

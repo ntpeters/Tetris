@@ -15,10 +15,16 @@ Block::Block() {
     exists = false;
 }
 
+Block::Block( ALLEGRO_BITMAP* blockIn ) {
+	block = blockIn;
+
+	exists = false;;
+}
+
 Block::~Block() {
 	// Free bitmap object
-	al_destroy_bitmap( block );
-	writeLog( LOG_VERBOSE, "Bitmap object destroyed" );
+	//al_destroy_bitmap( block );
+	//writeLog( LOG_VERBOSE, "Bitmap object destroyed" );
 }
 
 ALLEGRO_BITMAP* Block::getBlock() {
@@ -39,4 +45,5 @@ bool Block::doesExist() {
 
 void Block::toggleExists() {
 	exists = !exists;
+	writeLog( LOG_VERBOSE, "toggle - %s", exists ? "true" : "false" );
 }

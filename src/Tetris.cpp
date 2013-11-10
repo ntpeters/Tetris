@@ -189,7 +189,7 @@ Tetris::~Tetris() {
     Begin game execution
 */
 void Tetris::play() {
-    writeLog( LOG_INFO, "Game started successfully!" );
+    writeLog( LOG_INFO, "Tetris started successfully!" );
 
     // Start the timer
     al_start_timer( timer );

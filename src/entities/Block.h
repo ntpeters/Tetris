@@ -5,6 +5,7 @@
 class Block {
 public:
 	Block();
+	Block( ALLEGRO_BITMAP* blockIn );
 	~Block();
 	ALLEGRO_BITMAP* getBlock();
 	ALLEGRO_COLOR getColor();

@@ -1,20 +1,52 @@
 #include "Tetromino.h"
 #include "../util/simplog.h"
 #include "Tetromino_Type.h"
+#include <vector>
 
-Tetromino::Tetromino( Tetromino_Type type ) {
+Tetromino::Tetromino( Tetromino_Type type )
+: blocks( decide_array_size( type ), std::vector<Block>( decide_array_size( type ), Block() ) ) {
     x = 280;
     y = -29;
 
-    if( type == Tetromino_Type::I_BLOCK || type == Tetromino_Type::O_BLOCK ) {
+/*    if( type == Tetromino_Type::I_BLOCK || type == Tetromino_Type::O_BLOCK ) {
         array_size = 4;
     } else {
         array_size = 3;
+    }*/
+
+    init_block_array( type );
+}
+
+Tetromino::Tetromino( Tetromino_Type type, ALLEGRO_BITMAP* blockIn )
+: blocks( decide_array_size( type ), std::vector<Block>( decide_array_size( type ), Block( blockIn ) ) ) {
+    x = 280;
+    y = -29;
+
+/*    if( type == Tetromino_Type::I_BLOCK || type == Tetromino_Type::O_BLOCK ) {
+        array_size = 4;
+    } else {
+        array_size = 3;
+    }*/
+
+    init_block_array( type );
+}
+
+Tetromino::~Tetromino() {
+
+}
+
+int Tetromino::decide_array_size( Tetromino_Type type ) {
+    if( type == Tetromino_Type::I_BLOCK || type == Tetromino_Type::O_BLOCK ) {
+        array_size = 4;
+        return 4;
+    } else {
+        array_size = 3;
+        return 3;
     }
+}
 
-    init_block_array();
-
-    switch( type ) {
+void Tetromino::init_block_array( Tetromino_Type type ) {
+        switch( type ) {
         case Tetromino_Type::I_BLOCK:
             block_color = al_map_rgb( 0, 255, 255 );
 
@@ -97,18 +129,6 @@ Tetromino::Tetromino( Tetromino_Type type ) {
     }
 }
 
-Tetromino::~Tetromino() {
-
-}
-
-void Tetromino::init_block_array() {
-    blocks = new Block*[array_size];
-    for( int i = 0; i < array_size; i++ )
-        blocks[i] = new Block[array_size];
-
-    writeLog( LOG_VERBOSE, "Tetromino array initialized" );
-}
-
 void Tetromino::rotateLeft() {
 
 }
@@ -143,7 +163,7 @@ void Tetromino::draw() {
             if( blocks[i][j].doesExist() ) {
                 al_draw_tinted_bitmap( blocks[i][j].getBlock(), block_color, x + i * 30, y + j * 30, 0 );
             } else {
-                // al_draw_tinted_bitmap( blocks[i][j].getBlock(), al_map_rgb(255,0,255), x + i * 30, y + j * 30, 0 );
+                //al_draw_tinted_bitmap( blocks[i][j].getBlock(), al_map_rgb(255,0,255), x + i * 30, y + j * 30, 0 );
             }
         }
     }
@@ -165,7 +185,7 @@ void Tetromino::setY( int yIn ) {
     y = yIn;
 }
 
-Block** Tetromino::getBlocks() {
+std::vector<std::vector<Block>> Tetromino::getBlocks() {
     return blocks;
 }
 
