@@ -10,7 +10,9 @@ public:
 	~Grid();
 	void set( int x, int y, Block blockIn );
 	Block* get( int x, int y );
+	void deleteRow( int row );
 
 private:
 	std::vector<std::vector<Block>> grid;
+	ALLEGRO_BITMAP* bmpImg;
 };
