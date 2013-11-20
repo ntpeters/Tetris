@@ -76,32 +76,20 @@ bool GameState::update( double delta ) {
          updateCounter++;
     }
 
-    if( updateCounter == 10 ) {
-        grid->deleteRow( 19 );
-        updateCounter++;
-    }
-
     return true;
 }
 
 bool GameState::checkCollision( Tetromino* tet ) {
     std::vector<std::vector<Block>> check = tet->getBlocks();
-    int x = tet->getX();
-    int y = tet->getY();
     int xA = (tet->getX()-250)/30;
     int yA = tet->getY()/30;
-    // writeLog( LOG_VERBOSE, "[%d, %d]", xA, yA );
+    writeLog( LOG_VERBOSE, "[%d, %d]", xA, yA );
     for( int i = 0; i < tet->getArrayWidth(); i++ ) {
         // writeLog( LOG_VERBOSE, "loop 1" );
         for( int j = tet->getArrayHeight()-1; j >= 0; j-- ) {
-            // writeLog( LOG_VERBOSE, "loop 2" );
-            // writeLog( LOG_VERBOSE, "check[%d, %d] - grid[%d, %d]", i, j, xA+i, yA+j );
-            if( ( check[i][j].doesExist() &&  grid->get( yA+1+j, xA+i )->doesExist() ) ){
-                // writeLog( LOG_VERBOSE, "if" );
+            if( ( check[i][j].doesExist() &&  grid->get( yA+1+j, xA+i )->doesExist() ) || yA + 1 >= 19 ){
                 for( int k = 0; k < tet->getArrayWidth(); k++ ) {
-                    // writeLog( LOG_VERBOSE, "loop 3" );
                     for( int l = 0; l < tet->getArrayHeight(); l++ ) {
-                        // writeLog( LOG_VERBOSE, "loop 4" );
                         if( check[l][k].doesExist() ) {
                             grid->set( yA+k, xA+l, check[l][k] );
                         }
@@ -164,24 +152,7 @@ bool GameState::render() {
         for( int j = 0; j < 20; j++ ) {
             //writeLog( LOG_VERBOSE, "checking if exists" );
             if( grid->get( j, i )->doesExist() ) {
-                if( j!=19 || updateCounter > 10 ) {
-                    //writeLog( LOG_VERBOSE, "drawing main..." );
-                    al_draw_tinted_bitmap( grid->get( j, i )->getBlock(), grid->get( j, i)->getColor(), 250 + i * 30, 1 + j * 30, 0 );
-                    // std::vector<std::vector<Block>> check = currentPiece->getBlocks();
-                    // int xA = (currentPiece->getX()-250)/30;
-                    // int yA = currentPiece->getY()/30;
-                    // if( check[l][k]->doesExist() ) {
-                    //     grid->set( xA+l, yA+k, check[l][k] );
-                    // }
-                    //writeLog( LOG_VERBOSE, "drew it!" );
-                } else {
-                    //writeLog( LOG_VERBOSE, "drawing other..." );
-                    if(updateCounter<10)
-                        al_draw_tinted_bitmap( grid->get( j, i )->getBlock(), al_map_rgb(150,180,200), 250 + i * 30, 1 + j * 30, 0 );
-                }
-            } else if( j == 19 && updateCounter < 10) {
-                //writeLog( LOG_VERBOSE, "toggling" );
-                grid->get( j, i )->toggleExists();
+                al_draw_tinted_bitmap( grid->get( j, i )->getBlock(), grid->get( j, i)->getColor(), 250 + i * 30, 1 + j * 30, 0 );
             }
         }
     }

@@ -3,7 +3,7 @@
 #include "Tetromino_Type.h"
 #include <vector>
 
-Tetromino::Tetromino( Tetromino_Type type )
+Tetromino::Tetromino( Tetromino_Type type ) 
 : blocks( decide_array_size( type ), std::vector<Block>( decide_array_size( type ), Block() ) ) {
     x = 280;
     y = -29;
@@ -151,10 +151,6 @@ void Tetromino::moveDown( double delta ) {
 
 void Tetromino::update( double delta ) {
     y += 30;
-
-    if( y > 600 ) {
-        y = -29;
-    }
 }
 
 void Tetromino::draw() {
