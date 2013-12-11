@@ -15,4 +15,5 @@ public:
 private:
 	std::vector<std::vector<Block>> grid;
 	ALLEGRO_BITMAP* bmpImg;
+	std::vector<int> rowCount{ std::vector<int>( 20, 0 ) };
 };

@@ -63,14 +63,13 @@ bool GameState::update( double delta ) {
         currentPiece->update( delta );
 
         if( checkCollision( currentPiece ) ) {
-           delete currentPiece;
-           currentPiece = nextPiece;
-           nextPiece = this->getRandomPiece( blockImg);
-           nextPiece->setX( 580 );
-           nextPiece->setY( 60 );
-           currentPiece->setX( 280 );
-           currentPiece->setY( -29 );
-           // writeLog( LOG_VERBOSE, "deleted" );
+            delete currentPiece;
+            currentPiece = nextPiece;
+            nextPiece = this->getRandomPiece( blockImg);
+            nextPiece->setX( 580 );
+            nextPiece->setY( 60 );
+            currentPiece->setX( 280 );
+            currentPiece->setY( -58 );
         }
          totalTime = 0;
          updateCounter++;
@@ -83,13 +82,18 @@ bool GameState::checkCollision( Tetromino* tet ) {
     std::vector<std::vector<Block>> check = tet->getBlocks();
     int xA = (tet->getX()-250)/30;
     int yA = tet->getY()/30;
-    writeLog( LOG_VERBOSE, "[%d, %d]", xA, yA );
+    //writeLog( LOG_VERBOSE, "[%d, %d]", xA, yA );
     for( int i = 0; i < tet->getArrayWidth(); i++ ) {
-        // writeLog( LOG_VERBOSE, "loop 1" );
         for( int j = tet->getArrayHeight()-1; j >= 0; j-- ) {
             if( ( check[i][j].doesExist() &&  grid->get( yA+1+j, xA+i )->doesExist() ) || yA + 1 >= 19 ){
                 for( int k = 0; k < tet->getArrayWidth(); k++ ) {
                     for( int l = 0; l < tet->getArrayHeight(); l++ ) {
+                        writeLog( LOG_VERBOSE, "copying... [%d, %d]", yA, xA );
+
+                        // This is dirty and temporary.
+                        // TODO: exit cleanly
+                        if( xA < 0 ) { throw -2; }
+
                         if( check[l][k].doesExist() ) {
                             grid->set( yA+k, xA+l, check[l][k] );
                         }

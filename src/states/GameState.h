@@ -21,4 +21,5 @@ private:
     //std::vector<std::vector<Block*>> grid;
     Grid* grid;
     ALLEGRO_BITMAP* blockImg;
+
 };

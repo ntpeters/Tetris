@@ -6,7 +6,7 @@
 Tetromino::Tetromino( Tetromino_Type type ) 
 : blocks( decide_array_size( type ), std::vector<Block>( decide_array_size( type ), Block() ) ) {
     x = 280;
-    y = -29;
+    y = -58;
 
 /*    if( type == Tetromino_Type::I_BLOCK || type == Tetromino_Type::O_BLOCK ) {
         array_size = 4;
@@ -20,7 +20,7 @@ Tetromino::Tetromino( Tetromino_Type type )
 Tetromino::Tetromino( Tetromino_Type type, ALLEGRO_BITMAP* blockIn )
 : blocks( decide_array_size( type ), std::vector<Block>( decide_array_size( type ), Block( blockIn ) ) ) {
     x = 280;
-    y = -29;
+    y = -58;
 
 /*    if( type == Tetromino_Type::I_BLOCK || type == Tetromino_Type::O_BLOCK ) {
         array_size = 4;
@@ -159,7 +159,7 @@ void Tetromino::draw() {
             if( blocks[i][j].doesExist() ) {
                 al_draw_tinted_bitmap( blocks[i][j].getBlock(), block_color, x + i * 30, y + j * 30, 0 );
             } else {
-                //al_draw_tinted_bitmap( blocks[i][j].getBlock(), al_map_rgb(255,0,255), x + i * 30, y + j * 30, 0 );
+                al_draw_tinted_bitmap( blocks[i][j].getBlock(), al_map_rgb(255,0,255), x + i * 30, y + j * 30, 0 );
             }
         }
     }
