@@ -1,5 +1,5 @@
 #include "Tetromino.h"
-#include "../util/simplog.h"
+#include "../util/SimpleLogger/simplog.h"
 #include "Tetromino_Type.h"
 #include <vector>
 

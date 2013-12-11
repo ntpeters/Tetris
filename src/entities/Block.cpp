@@ -1,5 +1,5 @@
 #include "Block.h"
-#include "../util/simplog.h"
+#include "../util/SimpleLogger/simplog.h"
 
 Block::Block() {
 	const char* bmpFile = "res/img/block2.png";

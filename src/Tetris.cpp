@@ -1,6 +1,6 @@
 #include "Tetris.h"
 #include "states/MenuState.h"
-#include "util/simplog.h"
+#include "util/SimpleLogger/simplog.h"
 #include <stdio.h>
 #include <string>
 #include <allegro5/allegro.h>
