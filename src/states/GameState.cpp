@@ -128,6 +128,9 @@ Tetromino* GameState::getRandomPiece( ALLEGRO_BITMAP* blockIn ) {
             return new Tetromino( Tetromino_Type::S_BLOCK, blockIn );
         case 6:
             return new Tetromino( Tetromino_Type::Z_BLOCK, blockIn );
+        default:
+            writeLog( LOG_ERROR, "Invalid piece selected! Defaulting to I-Block." );
+            return new Tetromino( Tetromino_Type::I_BLOCK, blockIn );
     }
 }
 

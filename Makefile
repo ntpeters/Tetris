@@ -8,12 +8,15 @@ LIBS= allegro-5.0 allegro_dialog-5.0 allegro_font-5.0 allegro_ttf-5.0 allegro_co
 CXXFLAGS= -g -Wall -std=c++11 $(shell pkg-config --cflags ${LIBS})
 LDFLAGS= $(shell pkg-config --static --libs ${LIBS})
 
-all: $(PROG)
+all: logger $(PROG)
 
 $(PROG): $(OBJS)
-	mkdir -p ./bin/
-	$(CC) -o $(PROG) $(LDFLAGS) $(CFLAGS) $(OBJS)
+	mkdir -p ./bin
+	$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS)
 	rm -f $(OBJS)
 
+logger:
+	clang -c -Wall ./src/util/SimpleLogger/simplog.c -o ./src/util/SimpleLogger/simplog.o
+
 clean:
-	rm -f $(PROG) $(TEST_PROG) $(OBJS)
+	rm -f $(PROG) $(OBJS)
