@@ -16,7 +16,7 @@ $(PROG): $(OBJS)
 	rm -f $(OBJS)
 
 logger:
-	clang -c -Wall ./src/util/SimpleLogger/simplog.c -o ./src/util/SimpleLogger/simplog.o
+	cd ./src/util/SimpleLogger; git pull origin master; make clean all
 
 clean:
 	rm -f $(PROG) $(OBJS)
