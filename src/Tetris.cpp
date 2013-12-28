@@ -20,11 +20,11 @@ Tetris::Tetris() {
     fontName        = "res/fnt/minecraftia.ttf";
     showFPS         = true;
 
-    writeLog( LOG_VERBOSE, "Target FPS: %.2f", targetFPS );
-    writeLog( LOG_VERBOSE, "Screen Width: %d", screenWidth );
-    writeLog( LOG_VERBOSE, "Screen Height: %d", screenHeight );
-    writeLog( LOG_VERBOSE, "Font Name: %s", fontName );
-    writeLog( LOG_VERBOSE, "Display FPS set to '%s'", showFPS ? "true" : "false" );
+    simplog.writeLog( LOG_VERBOSE, "Target FPS: %.2f", targetFPS );
+    simplog.writeLog( LOG_VERBOSE, "Screen Width: %d", screenWidth );
+    simplog.writeLog( LOG_VERBOSE, "Screen Height: %d", screenHeight );
+    simplog.writeLog( LOG_VERBOSE, "Font Name: %s", fontName );
+    simplog.writeLog( LOG_VERBOSE, "Display FPS set to '%s'", showFPS ? "true" : "false" );
 
     // Begin initializing Allegro objects
     display        = NULL;
@@ -35,125 +35,125 @@ Tetris::Tetris() {
 
     // Initialize Allegro
     if( !al_init() ) {
-        writeLog( LOG_FATAL, "Failed to initialize Allegro!" );
+        simplog.writeLog( LOG_FATAL, "Failed to initialize Allegro!" );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Allegro successfully initiallized" );
+        simplog.writeLog( LOG_DEBUG, "Allegro successfully initiallized" );
     }
  
     // Create the display
     display = al_create_display( screenWidth, screenHeight);
     if( !display ) {
-        writeLog( LOG_FATAL, "Failed to create display!" );
+        simplog.writeLog( LOG_FATAL, "Failed to create display!" );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Display created successfully" );
+        simplog.writeLog( LOG_DEBUG, "Display created successfully" );
     }
 
     // Initialize the keyboard
     if( !al_install_keyboard() ) {
-        writeLog( LOG_FATAL, "Failed to initialize the keyboard!" );
+        simplog.writeLog( LOG_FATAL, "Failed to initialize the keyboard!" );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Keyboard initialized successfully" );
+        simplog.writeLog( LOG_DEBUG, "Keyboard initialized successfully" );
     }
 
     // Initialize the mouse
     if( !al_install_mouse() ) {
-        writeLog( LOG_FATAL, "Failed to initialize the mouse!" );
+        simplog.writeLog( LOG_FATAL, "Failed to initialize the mouse!" );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Mouse initialized successfully" );
+        simplog.writeLog( LOG_DEBUG, "Mouse initialized successfully" );
     }
 
     // Create the main event queue
     main_queue = al_create_event_queue();
     if( !main_queue ) {
-        writeLog( LOG_FATAL, "Failed to create main event queue!" );
+        simplog.writeLog( LOG_FATAL, "Failed to create main event queue!" );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Main event Queue created susscessfully" );
+        simplog.writeLog( LOG_DEBUG, "Main event Queue created susscessfully" );
     }
 
     // Create the input event queue
     input_queue = al_create_event_queue();
     if( !input_queue ) {
-        writeLog( LOG_FATAL, "Failed to create input event queue!" );
+        simplog.writeLog( LOG_FATAL, "Failed to create input event queue!" );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Input event Queue created susscessfully" );
+        simplog.writeLog( LOG_DEBUG, "Input event Queue created susscessfully" );
     }
 
     // Register the display with the event queue
     al_register_event_source( main_queue, al_get_display_event_source( display ) );
-    writeLog( LOG_VERBOSE, "Display event registered" );
+    simplog.writeLog( LOG_VERBOSE, "Display event registered" );
 
     // Register the keyboard with the event queue
     al_register_event_source( input_queue, al_get_keyboard_event_source() );
-    writeLog( LOG_VERBOSE, "Keyboard event registered" );
+    simplog.writeLog( LOG_VERBOSE, "Keyboard event registered" );
 
     // Register the mouse with the event queue
     al_register_event_source( input_queue, al_get_mouse_event_source() );
-    writeLog( LOG_VERBOSE, "Mouse event registered" );
+    simplog.writeLog( LOG_VERBOSE, "Mouse event registered" );
 
     // Initialize Allegro's image addon for handling images
     if( !al_init_image_addon() ) {
-        writeLog( LOG_FATAL, "Failed to initialize image addon!" );
+        simplog.writeLog( LOG_FATAL, "Failed to initialize image addon!" );
         throw -1;
     } else {
-        writeLog( LOG_VERBOSE, "Image addon initialized" );
+        simplog.writeLog( LOG_VERBOSE, "Image addon initialized" );
     }
 
     // Initialize Allegro's primitives addon for handling images
     if( !al_init_primitives_addon() ) {
-        writeLog( LOG_FATAL, "Failed to initialize primitives addon!" );
+        simplog.writeLog( LOG_FATAL, "Failed to initialize primitives addon!" );
         throw -1;
     } else {
-        writeLog( LOG_VERBOSE, "Primitives addon initialized" );
+        simplog.writeLog( LOG_VERBOSE, "Primitives addon initialized" );
     }
 
     // Initialize Allegro's font addon for handling fonts
     al_init_font_addon();
-    writeLog( LOG_VERBOSE, "Font addon initialized" );
+    simplog.writeLog( LOG_VERBOSE, "Font addon initialized" );
 
     // Initialize Allegro's TTF addon for handling TTF fonts
     if( !al_init_ttf_addon() ) {
-        writeLog( LOG_FATAL, "Failed to initialize TTF addon!" );
+        simplog.writeLog( LOG_FATAL, "Failed to initialize TTF addon!" );
         throw -1;
     } else {
-        writeLog( LOG_VERBOSE, "TTF addon initialized" );
+        simplog.writeLog( LOG_VERBOSE, "TTF addon initialized" );
     }
 
     // Load a size 18 font
     font18 = al_load_font( fontName, 18, 0 );
     if( !font18 ) {
-        writeLog( LOG_FATAL, "Failed to load font '%s' at size %d!", fontName, 18 );
+        simplog.writeLog( LOG_FATAL, "Failed to load font '%s' at size %d!", fontName, 18 );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 18 );
+        simplog.writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 18 );
     }
 
     // Load a size 12 font
     font12 = al_load_font( fontName, 12, 0 );
     if( !font12 ) {
-        writeLog( LOG_FATAL, "Failed to load font '%s' at size %d!", fontName, 12 );
+        simplog.writeLog( LOG_FATAL, "Failed to load font '%s' at size %d!", fontName, 12 );
         throw -1;
     } else {
-        writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 12 );
+        simplog.writeLog( LOG_DEBUG, "Font '%s' loaded at size %d", fontName, 12 );
     }
 
     // Create a timer to cap the game FPS
     timer = al_create_timer( 1.0 / targetFPS );
     if( !timer ) {
-        writeLog( LOG_FATAL, "Failed to create timer with resolution of %.2f seconds!", 1.0 / targetFPS );
+        simplog.writeLog( LOG_FATAL, "Failed to create timer with resolution of %.2f seconds!", 1.0 / targetFPS );
         throw -1;
     } else {
-        writeLog( LOG_VERBOSE, "Timer created with resolution of %.2f seconds", 1.0 / targetFPS );
+        simplog.writeLog( LOG_VERBOSE, "Timer created with resolution of %.2f seconds", 1.0 / targetFPS );
     }
 
     // Register the timer with the event queue
     al_register_event_source( main_queue, al_get_timer_event_source( timer ) );
-    writeLog( LOG_VERBOSE, "Timer event registered" );
+    simplog.writeLog( LOG_VERBOSE, "Timer event registered" );
 
     // Clear the screen to black
     al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
@@ -168,32 +168,32 @@ Tetris::Tetris() {
 */
 Tetris::~Tetris() {
     al_destroy_display( display );
-    writeLog( LOG_VERBOSE, "Display destroyed" );
+    simplog.writeLog( LOG_VERBOSE, "Display destroyed" );
 
     al_destroy_event_queue( main_queue );
-    writeLog( LOG_VERBOSE, "Main event queue destroyed" );
+    simplog.writeLog( LOG_VERBOSE, "Main event queue destroyed" );
 
     al_destroy_event_queue( input_queue );
-    writeLog( LOG_VERBOSE, "Input event queue destroyed" );
+    simplog.writeLog( LOG_VERBOSE, "Input event queue destroyed" );
 
     al_destroy_timer( timer );
-    writeLog( LOG_VERBOSE, "Timer destroyed" );
+    simplog.writeLog( LOG_VERBOSE, "Timer destroyed" );
 
     al_destroy_font( font18 );
-    writeLog( LOG_VERBOSE, "Font destroyed" );
+    simplog.writeLog( LOG_VERBOSE, "Font destroyed" );
 
-    writeLog( LOG_DEBUG, "All game objects destroyed" );
+    simplog.writeLog( LOG_DEBUG, "All game objects destroyed" );
 }
 
 /*
     Begin game execution
 */
 void Tetris::play() {
-    writeLog( LOG_INFO, "Tetris started successfully!" );
+    simplog.writeLog( LOG_INFO, "Tetris started successfully!" );
 
     // Start the timer
     al_start_timer( timer );
-    writeLog( LOG_VERBOSE, "Timer started" );
+    simplog.writeLog( LOG_VERBOSE, "Timer started" );
 
     // Run loop variables
     bool done = false;

@@ -7,9 +7,9 @@ BaseState::BaseState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_que
     event_queue = event_queueIn;
     states      = statesIn;
 
-    writeLog( LOG_VERBOSE, "New state created (base state constructor)" );
+    simplog.writeLog( LOG_VERBOSE, "New state created (base state constructor)" );
 }
 
 BaseState::~BaseState() {
-    writeLog( LOG_VERBOSE, "State destroyed (base state destructor)" );
+    simplog.writeLog( LOG_VERBOSE, "State destroyed (base state destructor)" );
 }

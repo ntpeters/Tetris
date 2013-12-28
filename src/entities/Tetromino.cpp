@@ -55,7 +55,7 @@ void Tetromino::init_block_array( Tetromino_Type type ) {
             blocks[2][1].toggleExists();
             blocks[3][1].toggleExists();
 
-            writeLog( LOG_VERBOSE, "Tetromino I-Block created" );
+            simplog.writeLog( LOG_VERBOSE, "Tetromino I-Block created" );
             break;
         case Tetromino_Type::O_BLOCK:
             block_color = al_map_rgb( 255, 255, 0 );
@@ -65,7 +65,7 @@ void Tetromino::init_block_array( Tetromino_Type type ) {
             blocks[1][1].toggleExists();
             blocks[2][1].toggleExists();
 
-            writeLog( LOG_VERBOSE, "Tetromino O-Block created" );
+            simplog.writeLog( LOG_VERBOSE, "Tetromino O-Block created" );
             break;
         case Tetromino_Type::L_BLOCK:
             block_color = al_map_rgb( 255, 127, 0 );
@@ -75,7 +75,7 @@ void Tetromino::init_block_array( Tetromino_Type type ) {
             blocks[2][0].toggleExists();
             blocks[2][1].toggleExists();
 
-            writeLog( LOG_VERBOSE, "Tetromino L-Block created" );
+            simplog.writeLog( LOG_VERBOSE, "Tetromino L-Block created" );
             break;
         case Tetromino_Type::J_BLOCK:
             block_color = al_map_rgb( 0, 0, 255 );            
@@ -85,7 +85,7 @@ void Tetromino::init_block_array( Tetromino_Type type ) {
             blocks[1][1].toggleExists();
             blocks[2][1].toggleExists();
 
-            writeLog( LOG_VERBOSE, "Tetromino J-Block created" );
+            simplog.writeLog( LOG_VERBOSE, "Tetromino J-Block created" );
             break;
         case Tetromino_Type::T_BLOCK:
             block_color = al_map_rgb( 128, 0, 128 );
@@ -95,7 +95,7 @@ void Tetromino::init_block_array( Tetromino_Type type ) {
             blocks[1][1].toggleExists();
             blocks[2][1].toggleExists();
 
-            writeLog( LOG_VERBOSE, "Tetromino T-Block created" );
+            simplog.writeLog( LOG_VERBOSE, "Tetromino T-Block created" );
             break;
         case Tetromino_Type::S_BLOCK:
             block_color = al_map_rgb( 0, 255, 0 );
@@ -105,7 +105,7 @@ void Tetromino::init_block_array( Tetromino_Type type ) {
             blocks[1][1].toggleExists();
             blocks[0][1].toggleExists();
 
-            writeLog( LOG_VERBOSE, "Tetromino S-Block created" );
+            simplog.writeLog( LOG_VERBOSE, "Tetromino S-Block created" );
             break;
         case Tetromino_Type::Z_BLOCK:
             block_color = al_map_rgb( 255, 0, 0 );
@@ -115,10 +115,10 @@ void Tetromino::init_block_array( Tetromino_Type type ) {
             blocks[1][1].toggleExists();
             blocks[2][1].toggleExists();
 
-            writeLog( LOG_VERBOSE, "Tetromino Z-Block created" );
+            simplog.writeLog( LOG_VERBOSE, "Tetromino Z-Block created" );
             break;
         default:
-            writeLog( LOG_FATAL, "Invalid tetromino type provided!" );
+            simplog.writeLog( LOG_FATAL, "Invalid tetromino type provided!" );
     }
 
     // Set block colors

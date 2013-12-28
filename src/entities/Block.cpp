@@ -6,10 +6,10 @@ Block::Block() {
 
 	block = al_load_bitmap( bmpFile );
     if( !block ) {
-        writeLog( LOG_FATAL, "Failed to load bitmap!" );
+        simplog.writeLog( LOG_FATAL, "Failed to load bitmap!" );
         throw -1;
     } else {
-        writeLog( LOG_VERBOSE, "Bitmap loaded successfully" );
+        simplog.writeLog( LOG_VERBOSE, "Bitmap loaded successfully" );
     }
 
     exists = false;
@@ -24,7 +24,7 @@ Block::Block( ALLEGRO_BITMAP* blockIn ) {
 Block::~Block() {
 	// Free bitmap object
 	//al_destroy_bitmap( block );
-	//writeLog( LOG_VERBOSE, "Bitmap object destroyed" );
+	//simplog.writeLog( LOG_VERBOSE, "Bitmap object destroyed" );
 }
 
 ALLEGRO_BITMAP* Block::getBlock() {
@@ -45,5 +45,5 @@ bool Block::doesExist() {
 
 void Block::toggleExists() {
 	exists = !exists;
-	writeLog( LOG_VERBOSE, "toggle - %s", exists ? "true" : "false" );
+	simplog.writeLog( LOG_VERBOSE, "toggle - %s", exists ? "true" : "false" );
 }

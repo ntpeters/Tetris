@@ -23,7 +23,7 @@ int main( int argc, char **argv ) {
     // Initialize the logger
     initLogger();
 
-    writeLog( LOG_INFO, "Starting Tetris - Version: %s", version );
+    simplog.writeLog( LOG_INFO, "Starting Tetris - Version: %s", version );
 
     // Try to create a new Tetris game
     try {
@@ -46,16 +46,16 @@ int main( int argc, char **argv ) {
 
 void initLogger() {
     // Set logfile name
-    setLogFile( logFile );
+    simplog.setLogFile( logFile );
     
     // Suppresses log output to stdout when true
-    setLogSilentMode( silent );
+    simplog.setLogSilentMode( silent );
 
     // Flush the logfile
     if( !keepLogs ) {
-        flushLog();
+        simplog.flushLog();
     }
 
     // Set the level of logger output
-    setLogDebugLevel( logLevel );
+    simplog.setLogDebugLevel( logLevel );
 }

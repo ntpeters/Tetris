@@ -12,10 +12,10 @@ GameState::GameState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_que
 
     blockImg = al_load_bitmap( bmpFile );
     if( !blockImg ) {
-        writeLog( LOG_FATAL, "Failed to load bitmap!" );
+        simplog.writeLog( LOG_FATAL, "Failed to load bitmap!" );
         throw -1;
     } else {
-        writeLog( LOG_VERBOSE, "Bitmap loaded successfully" );
+        simplog.writeLog( LOG_VERBOSE, "Bitmap loaded successfully" );
     }
 
     currentPiece = this->getRandomPiece( blockImg );
@@ -24,15 +24,15 @@ GameState::GameState( ALLEGRO_DISPLAY* displayIn, ALLEGRO_EVENT_QUEUE* event_que
     nextPiece->setY( 60 );
 
     grid = new Grid( blockImg );
-    writeLog( LOG_DEBUG, "New game state created" );
+    simplog.writeLog( LOG_DEBUG, "New game state created" );
 }
 
 GameState::~GameState() {
-    writeLog( LOG_DEBUG, "Game state destroyed" );
+    simplog.writeLog( LOG_DEBUG, "Game state destroyed" );
 }
 
 bool GameState::update( double delta ) {
-    //writeLog( LOG_VERBOSE, "update" );
+    //simplog.writeLog( LOG_VERBOSE, "update" );
 
     totalTime += delta;
     
@@ -57,9 +57,9 @@ bool GameState::update( double delta ) {
             }
         }
     }
-    writeLog( LOG_VERBOSE, "%.2f", totalTime );
+    simplog.writeLog( LOG_VERBOSE, "%.2f", totalTime );
     if( totalTime >= 20  && currentPiece != nullptr ) {
-        // writeLog( LOG_VERBOSE, "piece processing" );
+        // simplog.writeLog( LOG_VERBOSE, "piece processing" );
         currentPiece->update( delta );
 
         if( checkCollision( currentPiece ) ) {
@@ -82,13 +82,13 @@ bool GameState::checkCollision( Tetromino* tet ) {
     std::vector<std::vector<Block>> check = tet->getBlocks();
     int xA = (tet->getX()-250)/30;
     int yA = tet->getY()/30;
-    //writeLog( LOG_VERBOSE, "[%d, %d]", xA, yA );
+    //simplog.writeLog( LOG_VERBOSE, "[%d, %d]", xA, yA );
     for( int i = 0; i < tet->getArrayWidth(); i++ ) {
         for( int j = tet->getArrayHeight()-1; j >= 0; j-- ) {
             if( ( check[i][j].doesExist() &&  grid->get( yA+1+j, xA+i )->doesExist() ) || yA + 1 >= 19 ){
                 for( int k = 0; k < tet->getArrayWidth(); k++ ) {
                     for( int l = 0; l < tet->getArrayHeight(); l++ ) {
-                        writeLog( LOG_VERBOSE, "copying... [%d, %d]", yA, xA );
+                        simplog.writeLog( LOG_VERBOSE, "copying... [%d, %d]", yA, xA );
 
                         // This is dirty and temporary.
                         // TODO: exit cleanly
@@ -99,7 +99,7 @@ bool GameState::checkCollision( Tetromino* tet ) {
                         }
                     }
                 }
-                //writeLog( LOG_VERBOSE, "done" );
+                //simplog.writeLog( LOG_VERBOSE, "done" );
                 //al_rest(1000);
                 return true;
             }
@@ -129,13 +129,13 @@ Tetromino* GameState::getRandomPiece( ALLEGRO_BITMAP* blockIn ) {
         case 6:
             return new Tetromino( Tetromino_Type::Z_BLOCK, blockIn );
         default:
-            writeLog( LOG_ERROR, "Invalid piece selected! Defaulting to I-Block." );
+            simplog.writeLog( LOG_ERROR, "Invalid piece selected! Defaulting to I-Block." );
             return new Tetromino( Tetromino_Type::I_BLOCK, blockIn );
     }
 }
 
 bool GameState::render() { 
-    //writeLog( LOG_VERBOSE, "render" );
+    //simplog.writeLog( LOG_VERBOSE, "render" );
 
     // Clear screen to black
     al_clear_to_color( al_map_rgb( 0, 0, 0 ) );
@@ -153,11 +153,11 @@ bool GameState::render() {
         al_draw_line(250, i, 550, i, al_map_rgb( 255, 255, 255 ), 1);
     }
 
-    //writeLog( LOG_VERBOSE, "about to draw" );
+    //simplog.writeLog( LOG_VERBOSE, "about to draw" );
     // Draw the grid
     for( int i = 0; i < 10; i++ ) {
         for( int j = 0; j < 20; j++ ) {
-            //writeLog( LOG_VERBOSE, "checking if exists" );
+            //simplog.writeLog( LOG_VERBOSE, "checking if exists" );
             if( grid->get( j, i )->doesExist() ) {
                 al_draw_tinted_bitmap( grid->get( j, i )->getBlock(), grid->get( j, i)->getColor(), 250 + i * 30, 1 + j * 30, 0 );
             }
@@ -166,7 +166,7 @@ bool GameState::render() {
 
     // Do not draw piece if it currently does not exists
     if( currentPiece != nullptr ) {
-        //writeLog( LOG_VERBOSE, "drawing" );
+        //simplog.writeLog( LOG_VERBOSE, "drawing" );
         currentPiece->draw();    
     }
 
